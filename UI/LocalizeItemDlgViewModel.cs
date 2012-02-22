@@ -227,7 +227,7 @@ namespace Localization.UI
 			{
 				stringsLocalized = true;
 
-				foreach (var locInfo in node.SavedTranslationInfo.Values.Where(li => !li.IsEmpty))
+				foreach (var locInfo in node.SavedTranslationInfo.Values)
 					node.Manager.StringCache.UpdateLocalizedInfo(locInfo);
 
 				// Update each object with the specified id, with the localized string(s).
@@ -291,7 +291,7 @@ namespace Localization.UI
 				if ((locInfo.UpdateFields & UpdateFields.Comment) == UpdateFields.Comment)
 					node.SavedComment = (locInfo.Comment == string.Empty ? null : locInfo.Comment);
 
-				node.SavedTranslationInfo[_tgtLangId].UpdateFields |= locInfo.UpdateFields;
+				node.SavedTranslationInfo[_tgtLangId].UpdateFields |= locInfo.UpdateFields;		
 			}
 		}
 
