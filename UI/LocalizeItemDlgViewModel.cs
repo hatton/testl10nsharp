@@ -611,7 +611,11 @@ namespace Localization.UI
 			string yText = string.Empty;
 
 			var prefixToRemove = (x.TreeView != null && x.TreeView.SelectedNode != null ?
-				x.TreeView.SelectedNode.Name : string.Empty);
+                x.TreeView.SelectedNode.Name : string.Empty);
+
+            const string kNonsenseIfNoPrefixExists = "5%ij#a"; //replace fails if the pattern is "", so use this
+            if (string.IsNullOrEmpty(prefixToRemove))
+                prefixToRemove = kNonsenseIfNoPrefixExists;
 
 			var ci = CultureInfo.GetCultureInfo("en");
 
