@@ -297,19 +297,22 @@ namespace Localization
 		/// ------------------------------------------------------------------------------------
 		public static void ShowLocalizationDialogBox()
 		{
-			LocalizeItemDlg.ShowDialog(null, null, false);
+            TipDialog.Show("If you click on an item while you hold ctrl and shift keys down, this tool will open up with that item already selected.");
+            LocalizeItemDlg.ShowDialog(null, null, false);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		public static void ShowLocalizationDialogBox(object ctrl)
 		{
+            TipDialog.Show("If you click on an item while you hold ctrl and shift keys down, this tool will open up with that item already selected.");
 			LocalizeItemDlg.ShowDialog(GetLocalizationManagerForObject(ctrl), ctrl, false);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		public static void ShowLocalizationDialogBox(string id)
 		{
-			LocalizeItemDlg.ShowDialog(GetLocalizationManagerForString(id), id, false);
+            TipDialog.Show("If you click on an item while you hold ctrl and shift keys down, this tool will open up with that item already selected.");
+            LocalizeItemDlg.ShowDialog(GetLocalizationManagerForString(id), id, false);
 		}
 
 		#endregion
