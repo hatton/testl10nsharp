@@ -81,7 +81,10 @@ namespace Localization.CodeReader
 			
 			foreach (var assembly in GetAllAssemblies())
 			{
-				try
+                if (assembly.Location.ToLower().Contains("framework") || assembly.FullName.Contains("mscorlib") || assembly.FullName.StartsWith("System") || assembly.FullName.StartsWith("Microsoft"))
+                    continue;
+
+                try
 				{
 					foreach (var type in assembly.GetTypes()
 						.Where(t => !typesToScan.Contains(t))
