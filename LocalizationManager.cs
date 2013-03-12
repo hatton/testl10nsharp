@@ -30,42 +30,46 @@ namespace Localization
 		private static Icon _iconForProgressDialogInTaskBar;
 		private string m_tmxFileFolder;
 
-		internal Dictionary<object, string> ObjectCache { get; private set; }
+	    internal Dictionary<object, string> ObjectCache { get; private set; }
 		internal Dictionary<Control, ToolTip> ToolTipCtrls { get; private set; }
 		
 		#region Static methods for creating a LocalizationManager
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Creates a new instance of a localization manager for the specifed application id.
-		/// If a localization manager has already been created for the specified id, then
-		/// that is returned.
-		/// </summary>
-		/// <param name="desiredUiLangId">The language code of the desired UI language. If
-		/// there are no translations for that ID, a message is displayed and the UI language
-		/// falls back to the default.</param>
-		/// <param name="appId">The application Id (e.g. 'Pa' for Phonology Assistant).
-		/// This should be a unique name that identifies the manager for an assembly or
-		/// application.</param>
-		/// <param name="appName">The application's name. This will appear to the user
-		/// in the localization dialog box as a parent item in the tree.</param>
-		/// <param name="appVersion"></param>
-		/// <param name="installedTmxFilePath">The full file path of the original TMX files
-		/// installed with the application.</param>
-		/// <param name="targetTmxFilePath">The full file path where to copy the TMX files
-		/// found in 'installedTmxFilePath' so they can be edited by the user. If the
-		/// value is null, the default location is used (which is appName combined with 
-		/// Environment.SpecialFolder.CommonApplicationData)</param>
-		/// <param name="iconForProgressDialogInTaskBar"> </param>
-		/// <param name="namespaceBeginnings">A list of namespace beginnings indicating
-		/// what types to scan for localized string calls. For example, to only scan
-		/// types found in Pa.exe and assuming all types in that assembly begin with
-		/// 'Pa', then this value would only contain the string 'Pa'.</param>
-		/// ------------------------------------------------------------------------------------
-		public static LocalizationManager Create(string desiredUiLangId, string appId,
+	    /// ------------------------------------------------------------------------------------
+	    /// <summary>
+	    /// Creates a new instance of a localization manager for the specifed application id.
+	    /// If a localization manager has already been created for the specified id, then
+	    /// that is returned.
+	    /// </summary>
+	    /// <param name="desiredUiLangId">The language code of the desired UI language. If
+	    /// there are no translations for that ID, a message is displayed and the UI language
+	    /// falls back to the default.</param>
+	    /// <param name="appId">The application Id (e.g. 'Pa' for Phonology Assistant).
+	    /// This should be a unique name that identifies the manager for an assembly or
+	    /// application.</param>
+	    /// <param name="appName">The application's name. This will appear to the user
+	    /// in the localization dialog box as a parent item in the tree.</param>
+	    /// <param name="appVersion"></param>
+	    /// <param name="installedTmxFilePath">The full file path of the original TMX files
+	    /// installed with the application.</param>
+	    /// <param name="targetTmxFilePath">The full file path where to copy the TMX files
+	    /// found in 'installedTmxFilePath' so they can be edited by the user. If the
+	    /// value is null, the default location is used (which is appName combined with 
+	    /// Environment.SpecialFolder.CommonApplicationData)</param>
+	    /// <param name="iconForProgressDialogInTaskBar"> </param>
+	    /// <param name="emailForSubmissions">This will be used in UI that helps the translator
+	    /// know what to do with their work</param>
+	    /// <param name="namespaceBeginnings">A list of namespace beginnings indicating
+	    /// what types to scan for localized string calls. For example, to only scan
+	    /// types found in Pa.exe and assuming all types in that assembly begin with
+	    /// 'Pa', then this value would only contain the string 'Pa'.</param>
+	    /// ------------------------------------------------------------------------------------
+	    public static LocalizationManager Create(string desiredUiLangId, string appId,
 			string appName, string appVersion, string installedTmxFilePath, string targetTmxFilePath, Icon iconForProgressDialogInTaskBar,
+            string emailForSubmissions,
 			params string[] namespaceBeginnings)
 		{
+            EmailForSubmissions = emailForSubmissions;
 			_iconForProgressDialogInTaskBar = iconForProgressDialogInTaskBar;
 			if (targetTmxFilePath == null)
 			{
@@ -1041,7 +1045,9 @@ namespace Localization
 			}
 		}
 
-		/// ------------------------------------------------------------------------------------
+        public static string EmailForSubmissions;
+
+	    /// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Handles the tool strip item disposed.
 		/// </summary>
