@@ -28,13 +28,15 @@ namespace Localization.UI
 		public static event StringsLocalizedHandler StringsLocalized;
 
 		private readonly LocalizeItemDlgViewModel _viewModel;
-		private int _tmpSplitDistance;
+	    private readonly LocalizationManager _callingManager;
+	    private int _tmpSplitDistance;
 		private DateTime _timeToGiveUpLookingForTranslator;
 
-		/// ------------------------------------------------------------------------------------
+
+	    /// ------------------------------------------------------------------------------------
 		internal static DialogResult ShowDialog(LocalizationManager callingManager, object obj,
 			bool runInReadonlyMode)
-		{
+		{          
 			if (callingManager != null && !callingManager.CanCustomizeLocalizations)
 				runInReadonlyMode = true;
 
@@ -43,7 +45,7 @@ namespace Localization.UI
 			var id = (callingManager == null ? viewModel.GetObjIdFromAnyCache(obj) :
 				callingManager.ObjectCache.FirstOrDefault(kvp => kvp.Key == obj).Value);
 
-			using (var dlg = new LocalizeItemDlg(viewModel, id))
+            using (var dlg = new LocalizeItemDlg(viewModel, id, callingManager))
 				return dlg.ShowDialog();
 		}
 
@@ -56,7 +58,7 @@ namespace Localization.UI
 
 			var viewModel = new LocalizeItemDlgViewModel(runInReadonlyMode);
 
-			using (var dlg = new LocalizeItemDlg(viewModel, id))
+			using (var dlg = new LocalizeItemDlg(viewModel, id, callingManager))
 				return dlg.ShowDialog();
 		}
 
@@ -71,11 +73,12 @@ namespace Localization.UI
 		}
 		
 		/// ------------------------------------------------------------------------------------
-		private LocalizeItemDlg(LocalizeItemDlgViewModel viewModel, string id) : this()
+		private LocalizeItemDlg(LocalizeItemDlgViewModel viewModel, string id, LocalizationManager callingManager) : this()
 		{
 			_viewModel = viewModel;
+		    _callingManager = callingManager;
 
-			Initialize();
+		    Initialize();
 
 			if (id == null)
 				return;
@@ -878,5 +881,13 @@ namespace Localization.UI
 					_textBoxSrcTranslation.Right - 1, _textBoxSrcTranslation.Bottom + 5);
 			}
 		}
+
+        private void _howToDistribute_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using(var dlg = new HowToDistributeDialog(LocalizationManager.EmailForSubmissions,_callingManager.GetTmxPathForLanguage(_viewModel.TgtLangId)))
+            {
+                dlg.ShowDialog();
+            }
+        }
 	}
 }
