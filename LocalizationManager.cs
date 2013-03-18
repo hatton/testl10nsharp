@@ -144,9 +144,10 @@ namespace Localization
 		/// ------------------------------------------------------------------------------------
 		private void CreateOrUpdateDefaultTmxFileIfNecessary(params string[] namespaceBeginnings)
 		{
-			if (File.Exists(DefaultStringFilePath))
+			if (File.Exists(DefaultStringFilePath) &&
+                File.ReadAllText(DefaultStringFilePath).Trim()!=string.Empty)  //I've seen this happen.
 			{
-				var xmlDoc = XElement.Load(DefaultStringFilePath);
+                var xmlDoc = XElement.Load(DefaultStringFilePath);
 				var verElement = xmlDoc.Element("header").Elements("prop")
 					.FirstOrDefault(e => (string)e.Attribute("type") == kAppVersionPropTag);
 
@@ -155,7 +156,7 @@ namespace Localization
 			}
 
 			// Before wasting a bunch of time, make sure we can open the file for writing.
-			var fileStream = File.Open(DefaultStringFilePath, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+			var fileStream = File.Open(DefaultStringFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
 			fileStream.Close();
 
 			var tmxDoc = LocalizedStringCache.CreateEmptyStringFile();
