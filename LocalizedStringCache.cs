@@ -91,7 +91,15 @@ namespace Localization
 						if (defaultTmxDoc.GetTransUnitForId(tu.Id) == null &&
 							!tu.Id.EndsWith(kToolTipSuffix) && !tu.Id.EndsWith(kShortcutSuffix))
 						{
-							tu.AddProp(kNoLongerUsedPropTag, "true");
+                            var movedUnit = defaultTmxDoc.GetTransUnitForOrphanWithId(tu.Id);
+                            if(movedUnit==null)
+                            {
+                                tu.AddProp(kNoLongerUsedPropTag, "true");
+                            }
+                            else
+                            {
+                                tu.Id = movedUnit.Id;
+                            }
 						}
 
 						TmxDocument.Body.AddTransUnitOrVariantFromExisting(tu, langId);
@@ -618,6 +626,14 @@ namespace Localization
 			return allPieces;
 		}
 
-		#endregion
+        public static string GetTerminalIdPart(string id)
+        {
+            var pieces = id.Split('.');
+            if (pieces.Length == 0)
+                return "";
+            return pieces.Last();
+        }
+
+	    #endregion
 	}
 }
