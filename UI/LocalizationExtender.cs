@@ -36,8 +36,9 @@ namespace Localization.UI
 		private Dictionary<object, LocalizingInfo> m_extendedCtrls;
 		private LocalizationManager _lm;
 		private string _locManagerId;
+	    //private string _idPrefixForThisForm="";
 
-		#region Constructors
+	    #region Constructors
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Constructor for instance that supports Class Composition designer.
@@ -80,6 +81,13 @@ namespace Localization.UI
 				}
 			}
 		}
+
+        /// <summary>
+        /// This id will be prepended to all new items added to this page.
+        /// </summary>
+        [Localizable(false)]
+        [Category("Localizing Properties")]
+        public string PrefixForNewItems{get;set;}
 
 		///// ------------------------------------------------------------------------------------
 		///// <summary>
@@ -306,10 +314,12 @@ namespace Localization.UI
 		[Category("Localizing Properties")]
 		public string GetLocalizingId(object obj)
 		{
-			return GetLocalizedObjectInfo(obj).Id;
+            var l = GetLocalizedObjectInfo(obj);
+            l.CreateIdIfMissing(PrefixForNewItems);
+            return l.Id;
 		}
 
-		/// ------------------------------------------------------------------------------------
+	    /// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Sets the string id for the specified control. Use this method to keep track of all
 		/// the controls being extended. This information will be used in the EndInit (i.e.
@@ -392,7 +402,8 @@ namespace Localization.UI
 			GetLocalizedObjectInfo(obj).ToolTipText = tip;
 		}
 
-		/// ------------------------------------------------------------------------------------
+
+            /// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets the localized object info. for the specified object.
 		/// </summary>
