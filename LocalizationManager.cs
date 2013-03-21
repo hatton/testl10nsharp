@@ -701,10 +701,11 @@ namespace Localization
 			}
 
 			var text = lm.GetStringFromStringCache(UILanguageId, id);
-			if (text != null)
-				return text;
+            if (text != null)
+            	return text;
 
 			var locInfo = new LocalizingInfo(id) { LangId = kDefaultLang, Text = englishText };
+            locInfo.DiscoveredDynamically = true;
 			locInfo.UpdateFields = UpdateFields.Text;
 
 			if (!string.IsNullOrEmpty(comment))
@@ -712,10 +713,11 @@ namespace Localization
 				locInfo.Comment = comment;
 				locInfo.UpdateFields |= UpdateFields.Comment;
 			}
+         
 
 			lm.StringCache.UpdateLocalizedInfo(locInfo);
 			lm.SaveIfDirty();
-			return englishText;
+		    return englishText;
 		}
 
 		/// ------------------------------------------------------------------------------------
