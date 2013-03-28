@@ -128,8 +128,9 @@ namespace L10NSharp
 			Name = appName;
 			AppVersion = appVersion;
 			TmxFileFolder = tmxFolder;
+		    NamespaceBeginnings = namespaceBeginnings;
 
-			try
+		    try
 			{
 				new FileIOPermission(FileIOPermissionAccess.Write, TmxFileFolder).Demand();
 				CanCustomizeLocalizations = true;
@@ -415,7 +416,10 @@ namespace L10NSharp
 				DefaultStringFilePath = GetTmxPathForLanguage(kDefaultLang);
 			}
 		}
-		#endregion
+
+	    public string[] NamespaceBeginnings { get; set; }
+
+	    #endregion
 
         #region Methods for caching and localizing objects.
 		/// ------------------------------------------------------------------------------------
