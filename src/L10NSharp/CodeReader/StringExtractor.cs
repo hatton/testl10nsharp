@@ -30,7 +30,12 @@ namespace L10NSharp.CodeReader
 		{
 			_getStringMethodOverloads = typeof(LocalizationManager)
 				.GetMethods(BindingFlags.Static | BindingFlags.Public)
-				.Where(m => m.Name == "GetString").ToArray();
+				.Where(m => m.Name == "GetString" || m.Name=="Localize")
+                .Union(typeof(L10NStringExtensions)
+                .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                .Where(m => m.Name == "Localize"))
+                .ToArray();
+
 
 			_getStringCallsInfo = new List<LocalizingInfo>();
 			_extenderInfo = new Dictionary<string, LocalizingInfo>();
@@ -202,8 +207,16 @@ namespace L10NSharp.CodeReader
 				if (callee.Equals(module.ResolveMethod((int)_instructions[i].operand,
 					genericTypeArguments, genericMethodArguments)))
 				{
-					var locInfo = GetInfoForCallToLocalizationMethod(module, i, calleeParamCount);
-					if (locInfo != null)
+					LocalizingInfo locInfo;
+                    if (callee.Name == "Localize")
+                    {
+                        locInfo = GetInfoForCallToLocalizeExtension(module, i, calleeParamCount);
+                    }
+                    else
+                    {
+                        locInfo = GetInfoForCallToGetStringMethod(module, i, calleeParamCount);
+                    }
+				    if (locInfo != null)
 						_getStringCallsInfo.Add(locInfo);
 					else
 						Debug.Print("Call to {0} in {1} ({2}) could not be parsed", callee, caller.Name, caller.DeclaringType.Name);
@@ -211,28 +224,75 @@ namespace L10NSharp.CodeReader
 			}
 		}
 
-		/// ------------------------------------------------------------------------------------
-		private LocalizingInfo GetInfoForCallToLocalizationMethod(Module module,
+        /// <summary>
+        /// This is special because, as an extension method the 1st parameter in "hello".Localize("myapp.greeting") will be the string ("hello") itself,
+        /// which is backwards from the convention used in the GetString(id, theString, etc.)
+        /// </summary>
+        private LocalizingInfo GetInfoForCallToLocalizeExtension(Module module,int instrIndex, int paramsInMethodCall)
+        {
+            var parameters = GetParameters(module, instrIndex, paramsInMethodCall);
+
+            //begin part that differes from GetInfoForCallToLocalizationMethod (for now)
+            
+            if (parameters[0] == null)
+                return null;
+            
+            string id;
+            if(string.IsNullOrEmpty(parameters[1]))
+            {
+                id = parameters[0];
+            }
+            else
+            {
+                id = parameters[1];
+            }
+
+            var locInfo = new LocalizingInfo(id); 
+            locInfo.Text = parameters[0];                    
+
+            //end part that differes from GetInfoForCallToLocalizationMethod
+
+            if (paramsInMethodCall >= 3 && parameters[2] != null)
+                locInfo.Comment = parameters[2];
+
+            if (paramsInMethodCall == 6)
+            {
+                if (parameters[3] != null)
+                    locInfo.ToolTipText = parameters[3];
+                if (parameters[4] != null)
+                    locInfo.ShortcutKeys = parameters[4];
+            }
+
+            return locInfo;
+        }
+
+        private string[] GetParameters(Module module, int instrIndex, int paramsInMethodCall)
+	    {
+            int parameterIndex = paramsInMethodCall - 1;
+            var parameters = new string[paramsInMethodCall];
+            for (int i = 1; ; i++)
+	        {
+	            if (_instructions[instrIndex - i].opCode == OpCodes.Ldstr)
+	                parameters[parameterIndex--] = module.ResolveString((int) _instructions[instrIndex - i].operand);
+	            else if (_instructions[instrIndex - i].opCode != OpCodes.Call)
+	            {
+	                parameterIndex--;
+	                while (_instructions[instrIndex - i].opCode == OpCodes.Ldfld)
+	                    i++;
+	            }
+
+	            if (parameterIndex < 0)
+	                break;
+	        }
+            return parameters;
+	    }
+
+	    /// ------------------------------------------------------------------------------------
+		private LocalizingInfo GetInfoForCallToGetStringMethod(Module module,
 			int instrIndex, int paramsInMethodCall)
 		{
-			var parameters = new string[paramsInMethodCall];
-			int parameterIndex = paramsInMethodCall - 1;
-
-			for (int i = 1; ; i++)
-			{
-				if (_instructions[instrIndex - i].opCode == OpCodes.Ldstr)
-					parameters[parameterIndex--] = module.ResolveString((int)_instructions[instrIndex - i].operand);
-				else if (_instructions[instrIndex - i].opCode != OpCodes.Call)
-				{
-					parameterIndex--;
-					while (_instructions[instrIndex - i].opCode == OpCodes.Ldfld)
-						i++;
-				}
-
-				if (parameterIndex < 0)
-					break;
-			}
-
+            var parameters = GetParameters(module, instrIndex, paramsInMethodCall);
+			
 			if (parameters[0] == null || parameters[1] == null)
 				return null;
 
