@@ -12,14 +12,13 @@ namespace SampleApp
 
         public Form1()
         {
-            InitializeComponent();
-            uiLanguageComboBox1.SelectedLanguage = Settings.Default.UserInterfaceLanguage;
-            
+            InitializeComponent();         
  
             _dynamicLabel = new Label()
             {
                 Location = new Point(label1.Location.X+120, label1.Location.Y)
             };
+            uiLanguageComboBox1.SelectedLanguage = Settings.Default.UserInterfaceLanguage;
             UpdateDynamicLabel();
             this.Controls.Add(_dynamicLabel);
         }
