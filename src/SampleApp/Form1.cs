@@ -37,12 +37,14 @@ namespace SampleApp
             UpdateDynamicLabel();
         }
 
-        //This demonstrates how to handle strings which aren't hard-coded, so can't be discovered
-        //by the runtime code scanner. Instead, we ue this GetDynamicString
+        //This demonstrates how to handle strings that aren't hard-coded, so can't be discovered
+        //by the runtime code scanner. Instead, we ue this GetDynamicString.
+        //Note that L10NSharp.LocalizationManager.CollectUpNewStringsDiscoveredDynamically = false
+        // can be used to avoid adding new strings to the database when inappropriate.
 		private void button1_Click(object sender, EventArgs e)
 		{
 			_getDynamicStringButton.Enabled = false;
-
+		    
 			_dynamicLabel = new Label()
 			{
 				Location = new Point(_getDynamicStringButton.Location.X + 180, _getDynamicStringButton.Location.Y+10)
