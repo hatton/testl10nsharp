@@ -36,10 +36,11 @@ namespace SampleApp
 			
             try
             {
-                //When a user does some translation, their work goes in this directory.
-				//By using "null", we get AppData/Product. Note: non-admin-rights users can't write to that folder.
-
-	            string directoryOfUserModifiedTmxFiles = null;
+				// By using "null" for the following two things, we get AppData/Product.
+				// Note: non-admin-rights users can't write to that folder.
+				string directoryOfDefaultTmxFile = null;
+				// When a user does some translation, their work goes in this directory.
+				string directoryOfUserModifiedTmxFiles = null;
 
                 //if this is your first time running the app, the library will query the OS for the
                 //the default language. If it doesn't have that, it puts up a dialog listing what
@@ -49,7 +50,7 @@ namespace SampleApp
 
                 LocalizationManager.Create(theLanguageYouRememberedFromLastTime,
                                            "SampleApp", "SampleApp", Application.ProductVersion,
-										   directoryOfInstalledTmxFiles,
+										   directoryOfInstalledTmxFiles, directoryOfDefaultTmxFile,
                                            directoryOfUserModifiedTmxFiles, 
                                            Resources.Icon, //replace with your icon
                                            "sampleappLocalizations@nowhere.com", "SampleApp");
