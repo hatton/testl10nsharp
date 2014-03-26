@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
 
 namespace L10NSharp.UI
@@ -11,14 +10,7 @@ namespace L10NSharp.UI
         public HowToDistributeDialog(string emailForSubmissions, string targetTmxFilePath)
         {
             _targetTmxFilePath = targetTmxFilePath;
-			if (!File.Exists(_targetTmxFilePath))
-	        {
-		        _targetTmxFilePath = Path.GetDirectoryName(_targetTmxFilePath);
-				Debug.Assert(_targetTmxFilePath != null);
-		        if (!Directory.Exists(_targetTmxFilePath))
-			        Directory.CreateDirectory(_targetTmxFilePath);
-	        }
-	        InitializeComponent();
+            InitializeComponent();
 
 #if MONO
             //Steve M set these all to false in the Designer.cs, but that makes them all disappear on Windows
