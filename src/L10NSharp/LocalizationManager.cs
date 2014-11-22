@@ -174,7 +174,7 @@ namespace L10NSharp
 
 		#region LocalizationManager construction/disposal
 		/// ------------------------------------------------------------------------------------
-		private LocalizationManager(string appId, string appName, string appVersion,
+		internal LocalizationManager(string appId, string appName, string appVersion,
 			string directoryOfInstalledTmxFiles, string directoryForGeneratedDefaultTmxFile,
 			string directoryOfUserModifiedTmxFiles, params string[] namespaceBeginnings)
 		{
@@ -854,7 +854,7 @@ namespace L10NSharp
 		/// ------------------------------------------------------------------------------------
 		public static string GetDynamicString(string appId, string id, string englishText, string comment)
 		{
-            //this happens in unit test environments or apps that
+			//this happens in unit test environments or apps that
             //have imported a library that is L10N'ized, but the app
             //itself isn't initializing L10N yet.
             if(LoadedManagers.Count==0)
@@ -869,16 +869,26 @@ namespace L10NSharp
 					appId));
 			}
 
-			var text = lm.GetStringFromStringCache(UILanguageId, id);
-            if (text != null)
-            	return text;
+			// If we're in English mode, we are going to use the supplied englishText, regardless of what may be in
+			// some TMX, following the rule that the current c# code always wins.
+			// Otherwise, let's look up this string, maybe it has been translated and put into a TMX
+			if (UILanguageId != "en")
+			{
+				var text = lm.GetStringFromStringCache(UILanguageId, id);
+				if (text != null)
+					return text;
+			}
 
-		    if (!lm.CollectUpNewStringsDiscoveredDynamically)
+			if (!lm.CollectUpNewStringsDiscoveredDynamically)
                 return englishText;
 
-			var locInfo = new LocalizingInfo(id) { LangId = kDefaultLang, Text = englishText };
-            locInfo.DiscoveredDynamically = true;
-			locInfo.UpdateFields = UpdateFields.Text;
+			var locInfo = new LocalizingInfo(id)
+			{
+				LangId = kDefaultLang,
+				Text = englishText,
+				DiscoveredDynamically = true,
+				UpdateFields = UpdateFields.Text
+			};
 
 			if (!string.IsNullOrEmpty(comment))
 			{
@@ -886,7 +896,6 @@ namespace L10NSharp
 				locInfo.UpdateFields |= UpdateFields.Comment;
 			}
          
-
 			lm.StringCache.UpdateLocalizedInfo(locInfo);
 			lm.SaveIfDirty(null);// this will be common for GetDynamic string on users restricted from writing to ProgramData
 		    return englishText;
