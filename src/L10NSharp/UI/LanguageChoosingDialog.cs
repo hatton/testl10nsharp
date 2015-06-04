@@ -8,7 +8,7 @@ namespace L10NSharp.UI
 {
     public partial class LanguageChoosingDialog : Form
     {
-		private readonly L10NCultureInfo _requestedCulture;
+        private readonly L10NCultureInfo _requestedCulture;
         private string _originalMessageTemplate;
 
         public LanguageChoosingDialog(L10NCultureInfo requestedCulture, Icon icon)

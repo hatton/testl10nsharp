@@ -100,10 +100,10 @@ namespace L10NSharp
 
             if (string.IsNullOrEmpty(desiredUiLangId))
             {
-				desiredUiLangId = L10NCultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                desiredUiLangId = L10NCultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             }
 
-			var ci = L10NCultureInfo.GetCultureInfo(desiredUiLangId);
+            var ci = L10NCultureInfo.GetCultureInfo(desiredUiLangId);
             if (!GetUILanguages(true).Contains(ci))
             {
                 using (var dlg = new LanguageChoosingDialog(ci, applicationIcon))
@@ -339,20 +339,20 @@ namespace L10NSharp
 			var missingCultures = langsHavinglocalizations.Where(l => allLangs.Any(al => al.Name == l) == false);
 			allLangs.AddRange(missingCultures.Select(lang =>
 			{
-			    try
-			    {
+				try
+				{
 					return new L10NCultureInfo(lang); // return to the select, that is
-			    }
-			    catch (CultureNotFoundException)
-			    {
-                    // This can happen where Bloom has been localized on a later version of Windows,
-                    // or a tmx file created by hand.
-                    // For example, Windows 10 allows a much wider range than 8 and before.
-                    // Unfortunately there is no way to create a CultureInfo for a culture the system
-                    // doesn't recognize, so we just can't offer this language on this system
-                    // (short of at least a major change of API).
-			        return null; // to the Select; filtered out below
-			    }
+				}
+				catch (CultureNotFoundException)
+				{
+					// This can happen where Bloom has been localized on a later version of Windows,
+					// or a tmx file created by hand.
+					// For example, Windows 10 allows a much wider range than 8 and before.
+					// Unfortunately there is no way to create a CultureInfo for a culture the system
+					// doesn't recognize, so we just can't offer this language on this system
+					// (short of at least a major change of API).
+					return null; // to the Select; filtered out below
+				}
 			}).Where(ci =>ci != null));
 
 			if (!returnOnlyLanguagesHavingLocalizations)
